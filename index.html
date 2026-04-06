@@ -1,399 +1,233 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Resale Radar</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --bg: #0a0a0a;
-  --card: rgba(255,255,255,0.04);
-  --border: rgba(255,255,255,0.08);
-
-  --text: #f5f5f5;
-  --muted: #8a8a85;
-
-  --accent: #e8ff47;
-  --red: #ff4d3a;
-  --amber: #ffaa2a;
-  --blue: #3ab8ff;
-}
-
-body {
-  font-family: Inter, sans-serif;
-  color: var(--text);
-  background:
-    radial-gradient(circle at 20% 0%, rgba(232,255,71,0.06), transparent 40%),
-    radial-gradient(circle at 80% 20%, rgba(58,184,255,0.05), transparent 40%),
-    var(--bg);
-}
-
-/* HEADER */
-header {
-  display:flex; justify-content:space-between;
-  padding:16px 32px;
-  border-bottom:1px solid var(--border);
-  backdrop-filter: blur(12px);
-}
-
-.logo {
-  font-weight:700;
-  display:flex; gap:8px; align-items:center;
-}
-.logo-dot {
-  width:8px; height:8px; border-radius:50%;
-  background:var(--accent);
-  animation:pulse 2s infinite;
-}
-@keyframes pulse { 50% { opacity:.5; transform:scale(.8);} }
-
-/* HERO */
-.hero {
-  max-width:1100px;
-  margin:auto;
-  padding:80px 24px 40px;
-}
-
-.hero h1 {
-  font-size:64px;
-  line-height:1;
-  letter-spacing:-0.04em;
-}
-
-.hero span {
-  background:linear-gradient(90deg,#e8ff47,#baff2a);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.hero p {
-  margin-top:16px;
-  color:var(--muted);
-}
-
-/* STATS */
-.stats {
-  display:flex;
-  gap:40px;
-  margin-top:40px;
-}
-
-.stat {
-  font-size:28px;
-  font-weight:700;
-}
-
-/* FILTER + SORT BAR */
-.controls {
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
-  display:flex;
-  justify-content:space-between;
-  flex-wrap:wrap;
-  gap:10px;
-}
-
-.group {
-  display:flex;
-  gap:10px;
-}
-
-.filter {
-  padding:6px 14px;
-  border-radius:20px;
-  border:1px solid var(--border);
-  cursor:pointer;
-  transition:.2s;
-  font-size:13px;
-}
-
-.filter:hover {
-  transform:translateY(-1px);
-}
-
-.filter.active {
-  background:var(--accent);
-  color:black;
-  box-shadow:0 0 12px rgba(232,255,71,0.4);
-}
-
-/* GRID */
-.grid {
-  max-width:1100px;
-  margin:auto;
-  padding:20px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
-  gap:20px;
-}
-
-/* CARD */
-.card {
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:20px;
-  transition:.3s;
-  cursor:pointer;
-  position:relative;
-  overflow:hidden;
-  opacity:0;
-  transform:translateY(20px);
-  animation:enter .5s forwards;
-}
-
-@keyframes enter {
-  to { opacity:1; transform:none;}
-}
-
-.card:hover {
-  transform:translateY(-6px);
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
-}
-
-/* glow */
-.card::before {
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:16px;
-  background:linear-gradient(120deg,transparent,rgba(255,255,255,.2),transparent);
-  opacity:0;
-  transition:.3s;
-}
-.card:hover::before { opacity:1; }
-
-.title {
-  font-weight:700;
-  margin-bottom:10px;
-  font-size:15px;
-}
-
-.multiple {
-  font-size:32px;
-  font-weight:800;
-  margin-bottom:6px;
-}
-
-/* sparkline */
-.sparkline {
-  width:100%;
-  height:40px;
-  margin-top:8px;
-}
-
-.sparkline polyline {
-  fill:none;
-  stroke-width:2;
-}
-
-/* expand */
-.card.expanded {
-  transform:scale(1.02);
-  background:rgba(255,255,255,0.06);
-}
-
-.extra {
-  margin-top:10px;
-  display:none;
-  color:var(--muted);
-  font-size:13px;
-}
-
-.card.expanded .extra {
-  display:block;
-  animation:fade .3s;
-}
-
-@keyframes fade {
-  from { opacity:0; transform:translateY(10px);}
-  to { opacity:1; transform:translateY(0);}
-}
-
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0a0a0a; --surface: #111111; --surface-2: #1a1a1a;
+    --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.15);
+    --text: #f0ede8; --text-muted: #888880; --text-dim: #444440;
+    --accent: #e8ff47; --red: #ff4d3a; --amber: #ffaa2a; --green: #3aff8a; --blue: #3ab8ff; --purple: #c87eff;
+    --font-display: 'Syne', sans-serif; --font-mono: 'DM Mono', monospace;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-display); min-height: 100vh; overflow-x: hidden; }
+  header { border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); z-index: 100; }
+  .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
+  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)} }
+  .last-updated { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+  .hero { padding: 3.5rem 2rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .hero-label { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; }
+  .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 1rem; }
+  .hero h1 span { color: var(--accent); }
+  .hero-sub { font-size: 15px; color: var(--text-muted); font-weight: 400; max-width: 480px; line-height: 1.6; }
+  .stats-bar { max-width: 1100px; margin: 2rem auto 0; padding: 0 2rem 2rem; display: flex; gap: 2rem; border-bottom: 1px solid var(--border); }
+  .stat { display: flex; flex-direction: column; gap: 2px; }
+  .stat-value { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+  .filters-section { max-width: 1100px; margin: 0 auto; padding: 1.5rem 2rem; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+  .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-right: 4px; }
+  .filter-btn { font-family: var(--font-mono); font-size: 11px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-strong); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
+  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 500; }
+  .filter-divider { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+  .cards-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem; display: flex; flex-direction: column; gap: 0; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.3s ease both; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
+  .card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
+  .card.urgency-now  { border-top: 2px solid var(--red); }
+  .card.urgency-soon { border-top: 2px solid var(--amber); }
+  .card.urgency-watch{ border-top: 2px solid var(--blue); }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 1rem; }
+  .event-name { font-size: 15px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; flex: 1; }
+  .type-badge { font-family: var(--font-mono); font-size: 10px; padding: 3px 9px; border-radius: 20px; border: 1px solid; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.04em; }
+  .type-sports  { border-color: rgba(58,184,255,0.4); color: var(--blue); }
+  .type-concert { border-color: rgba(200,126,255,0.4); color: var(--purple); }
+  .type-festival{ border-color: rgba(58,255,138,0.4); color: var(--green); }
+  .card-divider { height: 1px; background: var(--border); margin-bottom: 1rem; }
+  .multiple-block { margin-bottom: 1rem; }
+  .multiple-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
+  .multiple-value { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
+  .multiple-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+  .heat-track { height: 3px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
+  .heat-fill { height: 100%; border-radius: 2px; }
+  .info-block { display: flex; flex-direction: column; gap: 8px; }
+  .info-row { display: flex; gap: 10px; font-size: 12px; line-height: 1.5; }
+  .info-key { font-family: var(--font-mono); color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; min-width: 54px; padding-top: 2px; flex-shrink: 0; }
+  .info-val { color: var(--text-muted); flex: 1; }
+  .urgency-tag { font-family: var(--font-mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em; display: inline-block; }
+  .tag-now   { background: rgba(255,77,58,0.15);  color: var(--red);   border: 1px solid rgba(255,77,58,0.3); }
+  .tag-soon  { background: rgba(255,170,42,0.15); color: var(--amber); border: 1px solid rgba(255,170,42,0.3); }
+  .tag-watch { background: rgba(58,184,255,0.15); color: var(--blue);  border: 1px solid rgba(58,184,255,0.3); }
+  .empty-state   { text-align:center; padding:4rem 2rem; color:var(--text-dim); font-family:var(--font-mono); font-size:13px; grid-column:1/-1; }
+  .loading-state { text-align:center; padding:4rem 2rem; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); grid-column:1/-1; letter-spacing:0.06em; }
+  .loading-dots::after { content:''; animation: dots 1.2s infinite; }
+  @keyframes dots { 0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'} }
+  .error-banner { background:rgba(255,77,58,0.08); border:1px solid rgba(255,77,58,0.2); border-radius:8px; padding:12px 16px; font-family:var(--font-mono); font-size:12px; color:var(--red); margin-bottom:1rem; display:none; }
+  footer { border-top:1px solid var(--border); padding:1.5rem 2rem; display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto; }
+  .footer-text { font-family:var(--font-mono); font-size:11px; color:var(--text-dim); }
+  @media (max-width:640px) {
+    header,.hero,.stats-bar,.filters-section,.cards-section{padding-left:1rem;padding-right:1rem}
+    .stats-bar{gap:1.2rem} .cards-grid{grid-template-columns:1fr}
+  }
 </style>
-
 </head>
-
 <body>
 
 <header>
   <div class="logo"><div class="logo-dot"></div>Resale Radar</div>
-  <div id="updated">loading...</div>
+  <div class="last-updated" id="last-updated">loading...</div>
 </header>
 
 <div class="hero">
+  <div class="hero-label">Live ticket intelligence</div>
   <h1>Buy retail.<br><span>Sell at a premium.</span></h1>
-  <p>Ticket opportunities with resale upside.</p>
+  <p class="hero-sub">Upcoming events going on sale with strong secondary market upside. Powered by Claude AI research.</p>
+</div>
 
-  <div class="stats">
-    <div class="stat" id="total">0</div>
-    <div class="stat" id="now">0</div>
-    <div class="stat" id="max">0×</div>
+<div class="stats-bar">
+  <div class="stat"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Events tracked</div></div>
+  <div class="stat"><div class="stat-value" id="stat-now" style="color:var(--red)">—</div><div class="stat-label">On sale now</div></div>
+  <div class="stat"><div class="stat-value" id="stat-max" style="color:var(--accent)">—</div><div class="stat-label">Max resale multiple</div></div>
+</div>
+
+<div class="filters-section">
+  <span class="filter-label">Type</span>
+  <button class="filter-btn active" data-filter="type" data-value="all">All</button>
+  <button class="filter-btn" data-filter="type" data-value="Sports">Sports</button>
+  <button class="filter-btn" data-filter="type" data-value="Concert">Concert</button>
+  <button class="filter-btn" data-filter="type" data-value="Festival">Festival</button>
+  <div class="filter-divider"></div>
+  <span class="filter-label">Urgency</span>
+  <button class="filter-btn active" data-filter="urgency" data-value="all">All</button>
+  <button class="filter-btn" data-filter="urgency" data-value="now"   style="color:var(--red);border-color:rgba(255,77,58,0.3)">Act now</button>
+  <button class="filter-btn" data-filter="urgency" data-value="soon"  style="color:var(--amber);border-color:rgba(255,170,42,0.3)">Soon</button>
+  <button class="filter-btn" data-filter="urgency" data-value="watch" style="color:var(--blue);border-color:rgba(58,184,255,0.3)">Watch</button>
+</div>
+
+<div class="cards-section">
+  <div id="error-banner" class="error-banner"></div>
+  <div class="cards-grid" id="cards-grid">
+    <div class="loading-state">Fetching events<span class="loading-dots"></span></div>
   </div>
 </div>
 
-<div class="controls">
-  <div class="group">
-    <div class="filter active" data-type="all">All</div>
-    <div class="filter" data-type="sports">Sports</div>
-    <div class="filter" data-type="concert">Concert</div>
-  </div>
-
-  <div class="group">
-    <div class="filter active" data-sort="multiple">Top</div>
-    <div class="filter" data-sort="urgency">Urgency</div>
-    <div class="filter" data-sort="name">Name</div>
-  </div>
-</div>
-
-<div class="grid" id="grid"></div>
+<footer>
+  <div class="footer-text">Powered by Claude AI &mdash; run <code>node refresh.js</code> to update</div>
+</footer>
 
 <script>
-let events = [];
-let filter = "all";
-let sortBy = "multiple";
+// ─── CONFIG — update these two lines ─────────────────────────────────────────
+const GITHUB_USER = 'samoeding';
+const GITHUB_REPO = 'resale-radar';
+// ─────────────────────────────────────────────────────────────────────────────
 
-/* parse multiple */
-function getMaxMultiple(m) {
-  const nums = m.match(/[\\d.]+/g);
-  if (!nums) return 0;
-  return Math.max(...nums.map(Number));
+const EVENTS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/events.json`;
+
+let allEvents = [];
+let activeFilters = { type: 'all', urgency: 'all' };
+
+const heatColor = { now: '#ff4d3a', soon: '#ffaa2a', watch: '#3ab8ff' };
+const tagClass  = { now: 'tag-now', soon: 'tag-soon', watch: 'tag-watch' };
+const tagLabel  = { now: 'Act now', soon: 'Coming soon', watch: 'Watch & wait' };
+
+function urgencyClass(u) {
+  const v = (u||'').toLowerCase().trim();
+  return v==='now' ? 'now' : v==='soon' ? 'soon' : 'watch';
+}
+function typeClass(t) {
+  const v = (t||'').toLowerCase().trim();
+  return v==='sports' ? 'sports' : v==='festival' ? 'festival' : 'concert';
+}
+function multipleToWidth(m) {
+  const nums = (m||'').match(/[\d.]+/g);
+  if (!nums) return 20;
+  const max = Math.max(...nums.map(Number));
+  return Math.min(100, Math.max(10, ((max-1)/9)*90+10));
 }
 
-/* sparkline data */
-function generateTrend(value) {
-  const arr = [];
-  for (let i=0;i<8;i++){
-    arr.push(value + (Math.random()-0.5)*0.6);
-  }
-  return arr;
-}
-
-function sparklineSVG(data,color){
-  const max=Math.max(...data);
-  const min=Math.min(...data);
-
-  const points=data.map((d,i)=>{
-    const x=(i/(data.length-1))*100;
-    const y=100-((d-min)/(max-min||1))*100;
-    return `${x},${y}`;
-  }).join(" ");
-
-  return `<svg class="sparkline" viewBox="0 0 100 100"><polyline points="${points}" stroke="${color}" /></svg>`;
-}
-
-/* sorting */
-function sortEvents(arr){
-  if(sortBy==="multiple"){
-    return arr.sort((a,b)=>getMaxMultiple(b.multiple)-getMaxMultiple(a.multiple));
-  }
-  if(sortBy==="urgency"){
-    const rank={now:3,soon:2,watch:1};
-    return arr.sort((a,b)=>rank[b.urgency]-rank[a.urgency]);
-  }
-  if(sortBy==="name"){
-    return arr.sort((a,b)=>a.name.localeCompare(b.name));
-  }
-  return arr;
-}
-
-/* render */
-function render(){
-  const grid=document.getElementById("grid");
-
-  let filtered=events.filter(e=>filter==="all"||e.type.toLowerCase()===filter);
-  filtered=sortEvents(filtered);
-
-  grid.innerHTML=filtered.map((e,i)=>{
-    const val=getMaxMultiple(e.multiple);
-    const trend=generateTrend(val);
-
-    let color="#3ab8ff";
-    if(e.urgency==="now") color="#ff4d3a";
-    if(e.urgency==="soon") color="#ffaa2a";
-
-    return `
-    <div class="card" style="animation-delay:${i*0.05}s">
-      <div class="title">${e.name}</div>
-      <div class="multiple">${e.multiple}</div>
-      ${sparklineSVG(trend,color)}
-      <div class="extra">
-        <div>${e.on_sale}</div>
-        <div>${e.best_bets}</div>
+function buildCard(ev) {
+  const urg = urgencyClass(ev.urgency);
+  const typ = typeClass(ev.type);
+  return `
+  <div class="card urgency-${urg}">
+    <div class="card-top">
+      <div class="event-name">${ev.name}</div>
+      <div class="type-badge type-${typ}">${ev.type||'Event'}</div>
+    </div>
+    <div class="card-divider"></div>
+    <div class="multiple-block">
+      <div class="multiple-row">
+        <span class="multiple-value">${ev.multiple}</span>
+        <span class="multiple-label">resale multiple</span>
       </div>
-    </div>`;
-  }).join("");
-
-  document.querySelectorAll(".card").forEach(c=>{
-    c.onclick=()=>c.classList.toggle("expanded");
-  });
+      <div class="heat-track"><div class="heat-fill" style="width:${multipleToWidth(ev.multiple)}%;background:${heatColor[urg]};"></div></div>
+    </div>
+    <div class="info-block">
+      <div class="info-row"><span class="info-key">On sale</span><span class="info-val">${ev.on_sale}</span></div>
+      <div class="info-row"><span class="info-key">Best bets</span><span class="info-val">${ev.best_bets}</span></div>
+      ${ev.city?`<div class="info-row"><span class="info-key">City</span><span class="info-val">${ev.city}</span></div>`:''}
+      <div class="info-row"><span class="info-key">Urgency</span><span class="info-val"><span class="urgency-tag ${tagClass[urg]}">${tagLabel[urg]}</span></span></div>
+    </div>
+  </div>`;
 }
 
-/* filters */
-document.querySelectorAll("[data-type]").forEach(f=>{
-  f.onclick=()=>{
-    document.querySelectorAll("[data-type]").forEach(x=>x.classList.remove("active"));
-    f.classList.add("active");
-    filter=f.dataset.type;
-    render();
-  };
-});
-
-/* sorting */
-document.querySelectorAll("[data-sort]").forEach(f=>{
-  f.onclick=()=>{
-    document.querySelectorAll("[data-sort]").forEach(x=>x.classList.remove("active"));
-    f.classList.add("active");
-    sortBy=f.dataset.sort;
-    render();
-  };
-});
-
-/* animate numbers */
-function animate(el,target){
-  let val=0;
-  const step=target/25;
-  const i=setInterval(()=>{
-    val+=step;
-    if(val>=target){
-      val=target;
-      clearInterval(i);
-    }
-    el.textContent=Math.floor(val);
-  },20);
+function renderCards() {
+  const grid = document.getElementById('cards-grid');
+  const filtered = allEvents.filter(ev => {
+    const typeOk    = activeFilters.type==='all' || (ev.type||'').toLowerCase()===activeFilters.type.toLowerCase();
+    const urgencyOk = activeFilters.urgency==='all' || urgencyClass(ev.urgency)===activeFilters.urgency;
+    return typeOk && urgencyOk;
+  });
+  grid.innerHTML = filtered.length ? filtered.map(buildCard).join('') : `<div class="empty-state">No events match your filters.</div>`;
 }
 
-/* load data */
-fetch("events.json")
-.then(r=>r.json())
-.then(data=>{
-  events=data.events;
-
-  animate(document.getElementById("total"),events.length);
-
-  animate(document.getElementById("now"),
-    events.filter(e=>e.urgency==="now").length
-  );
-
-  let max=0;
-  events.forEach(e=>{
-    const m=getMaxMultiple(e.multiple);
-    if(m>max) max=m;
+function updateStats() {
+  document.getElementById('stat-total').textContent = allEvents.length;
+  document.getElementById('stat-now').textContent   = allEvents.filter(e=>urgencyClass(e.urgency)==='now').length;
+  let maxVal = 0;
+  allEvents.forEach(ev => {
+    const nums = (ev.multiple||'').match(/[\d.]+/g);
+    if (nums) maxVal = Math.max(maxVal,...nums.map(Number));
   });
+  document.getElementById('stat-max').textContent = maxVal ? `${maxVal}×` : '—';
+}
 
-  document.getElementById("max").textContent=max+"×";
-  document.getElementById("updated").textContent="updated "+data.last_updated;
+async function loadData() {
+  try {
+    const res  = await fetch(EVENTS_URL+'?t='+Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    allEvents  = data.events || [];
+    document.getElementById('last-updated').textContent = 'updated '+( data.last_updated||'recently');
+    updateStats();
+    renderCards();
+  } catch(err) {
+    const b = document.getElementById('error-banner');
+    b.textContent = `Could not load events. Make sure GITHUB_USER is set in index.html and the repo is public. (${err.message})`;
+    b.style.display = 'block';
+    document.getElementById('cards-grid').innerHTML = '';
+  }
+}
 
-  render();
+document.querySelectorAll('.filter-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const f = btn.dataset.filter;
+    activeFilters[f] = btn.dataset.value;
+    document.querySelectorAll(`.filter-btn[data-filter="${f}"]`).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    renderCards();
+  });
 });
+
+loadData();
 </script>
-
 </body>
 </html>

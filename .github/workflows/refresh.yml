@@ -1,0 +1,41 @@
+name: Refresh Events (AI Research)
+
+on:
+  workflow_dispatch:
+    inputs:
+      focus:
+        description: 'Optional focus area (e.g. "sports only" or "summer 2026 concerts")'
+        required: false
+        default: ''
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install anthropic
+
+      - name: Run Claude research script
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FOCUS_AREA: ${{ github.event.inputs.focus }}
+        run: python scripts/research.py
+
+      - name: Commit draft for review
+        run: |
+          git config user.name "Resale Radar Bot"
+          git config user.email "bot@resale-radar"
+          git add events_draft.json
+          git commit -m "Draft refresh: $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "No changes to commit"
+          git push

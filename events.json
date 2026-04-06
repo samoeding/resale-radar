@@ -1,0 +1,86 @@
+{
+  "last_updated": "2026-04-06T00:00:00Z",
+  "generated_by": "seed",
+  "events": [
+    {
+      "name": "NBA Playoffs 2026",
+      "type": "Sports",
+      "multiple": "1.5–4×",
+      "on_sale": "Now — team sites + Ticketmaster as matchups confirmed (Play-In: Apr 14–17)",
+      "best_bets": "Knicks at MSG, any Conference Finals / Finals home games",
+      "city": "Multiple",
+      "urgency": "now",
+      "notes": ""
+    },
+    {
+      "name": "World Cup 2026 — Knockout Rounds",
+      "type": "Sports",
+      "multiple": "3–10×",
+      "on_sale": "FIFA Last-Minute Sales open now at fifa.com/tickets — first come, first served",
+      "best_bets": "Quarterfinals, semis, final; US / Argentina / Spain / Brazil group games",
+      "city": "Multiple US cities",
+      "urgency": "now",
+      "notes": ""
+    },
+    {
+      "name": "Lady Gaga — Mayhem Ball (2nd NA leg)",
+      "type": "Concert",
+      "multiple": "1.5–2.5×",
+      "on_sale": "Recently announced — check Ticketmaster for city on-sale dates",
+      "best_bets": "MSG and Kia Forum; any single-night-only markets",
+      "city": "New York, Los Angeles",
+      "urgency": "now",
+      "notes": ""
+    },
+    {
+      "name": "Foo Fighters — Stadium Tour 2026",
+      "type": "Concert",
+      "multiple": "1.5–2×",
+      "on_sale": "Some dates on sale now; more releasing soon via Live Nation",
+      "best_bets": "Major stadium markets; w/ Queens of the Stone Age opening",
+      "city": "Multiple",
+      "urgency": "soon",
+      "notes": ""
+    },
+    {
+      "name": "Ed Sheeran — Play Tour (22 US cities)",
+      "type": "Concert",
+      "multiple": "1.5–2×",
+      "on_sale": "Summer/fall 2026 — check Ticketmaster for remaining on-sales",
+      "best_bets": "Single-night markets; floor and pit sections",
+      "city": "22 US cities",
+      "urgency": "soon",
+      "notes": ""
+    },
+    {
+      "name": "Oasis — Possible 2026 US Tour",
+      "type": "Concert",
+      "multiple": "3–6×",
+      "on_sale": "Not yet announced — set alerts on Ticketmaster + oasisinet.com",
+      "best_bets": "Any date — 2025 run sold out in seconds with massive premiums",
+      "city": "TBD",
+      "urgency": "watch",
+      "notes": ""
+    },
+    {
+      "name": "Justin Bieber — Anticipated Tour",
+      "type": "Concert",
+      "multiple": "2–4×",
+      "on_sale": "No dates yet — Coachella headliner strongly suggests tour coming",
+      "best_bets": "First-announced dates before market has priced in demand",
+      "city": "TBD",
+      "urgency": "watch",
+      "notes": ""
+    },
+    {
+      "name": "Olivia Rodrigo — Anticipated Tour",
+      "type": "Concert",
+      "multiple": "2–5×",
+      "on_sale": "No dates confirmed — new music activity suggests imminent announcement",
+      "best_bets": "Any date — GUTS Tour had huge secondary premiums everywhere",
+      "city": "TBD",
+      "urgency": "watch",
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+name: Publish Draft (Go Live)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Promote draft to live
+        run: |
+          if [ ! -f events_draft.json ]; then
+            echo "No events_draft.json found. Run 'Refresh Events' first."
+            exit 1
+          fi
+          cp events_draft.json events.json
+          echo "Draft promoted to events.json"
+
+      - name: Commit live events
+        run: |
+          git config user.name "Resale Radar Bot"
+          git config user.email "bot@resale-radar"
+          git add events.json
+          git commit -m "Publish: $(date -u '+%Y-%m-%d %H:%M') UTC"
+          git push

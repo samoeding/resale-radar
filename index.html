@@ -160,7 +160,7 @@ header.scrolled{background:rgba(9,9,11,0.95)}
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
   text-align:center;
-  overflow:hidden;
+  overflow:clip;
   padding:0 2rem;
 }
 /* Animated near-black gradient mesh */
@@ -202,7 +202,9 @@ header.scrolled{background:rgba(9,9,11,0.95)}
   letter-spacing:-0.05em;
   color:var(--text-primary);
   margin-bottom:24px;
-  will-change:transform;
+  position:sticky;
+  top:72px;
+  z-index:10;
 }
 .hero-accent{color:var(--accent)}
 .hero-sub{
@@ -228,25 +230,6 @@ header.scrolled{background:rgba(9,9,11,0.95)}
   50%{transform:translateX(-50%) translateY(4px)}
 }
 
-/* ─── SECTION HEADER (01 / 02 labels) ────────────────────────────────────── */
-.section-header{
-  max-width:1160px;margin:0 auto;
-  padding:0 2.5rem;
-  display:flex;align-items:center;gap:16px;
-  margin-bottom:32px;
-}
-.section-num{
-  font-family:var(--font-mono);
-  font-size:11px;
-  color:var(--text-tertiary);
-  letter-spacing:0.08em;
-  flex-shrink:0;
-}
-.section-rule{
-  flex:1;
-  height:1px;
-  background:var(--border-subtle);
-}
 
 /* ─── STATS STRIP ────────────────────────────────────────────────────────── */
 .stats-section{
@@ -299,6 +282,7 @@ header.scrolled{background:rgba(9,9,11,0.95)}
 }
 .stat-value.ar{color:var(--accent-red)}
 .stat-value.aa{color:var(--accent)}
+.stat-cell:last-child .stat-value{font-size:16px;line-height:1.3;padding-top:2px}
 .stat-label{
   font-family:var(--font-mono);
   font-size:11px;
@@ -312,9 +296,9 @@ header.scrolled{background:rgba(9,9,11,0.95)}
 .toolbar{
   position:sticky;top:56px;z-index:100;
   padding:12px 2.5rem 12px;
-  display:flex;align-items:center;
-  justify-content:space-between;
-  flex-wrap:wrap;gap:10px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;
+  gap:10px;
   transition:background 200ms ease,border-color 200ms ease,backdrop-filter 200ms ease;
 }
 .toolbar.stuck{
@@ -363,7 +347,7 @@ header.scrolled{background:rgba(9,9,11,0.95)}
   border-color:var(--accent);
   color:#fff;
 }
-.toolbar-right{display:flex;align-items:center;gap:10px}
+.toolbar-right{display:flex;align-items:center;gap:10px;margin-top:0}
 .result-count{
   font-family:var(--font-mono);
   font-size:11px;
@@ -452,9 +436,9 @@ header.scrolled{background:rgba(9,9,11,0.95)}
   gap:8px;margin-bottom:14px;
 }
 .event-name{
-  font-size:13px;font-weight:600;
-  line-height:1.4;letter-spacing:-0.02em;
-  color:var(--text-primary);flex:1;
+  font-size:15px;font-weight:600;
+  line-height:1.4;letter-spacing:-0.025em;
+  color:#ffffff;flex:1;
 }
 .save-btn{
   background:none;border:none;cursor:pointer;
@@ -469,7 +453,7 @@ header.scrolled{background:rgba(9,9,11,0.95)}
 .save-btn.pop{transform:scale(1.15)}
 .type-tag{
   font-family:var(--font-mono);
-  font-size:9px;font-weight:500;
+  font-size:9px;font-weight:600;
   letter-spacing:0.08em;text-transform:uppercase;
   padding:2px 7px;border-radius:4px;
   border:1px solid;white-space:nowrap;
@@ -497,8 +481,8 @@ header.scrolled{background:rgba(9,9,11,0.95)}
 .multiple-val{
   font-size:clamp(32px,4vw,40px);
   font-weight:700;
-  letter-spacing:-0.04em;line-height:1;
-  color:var(--text-primary);
+  letter-spacing:-0.05em;line-height:1;
+  color:#ffffff;
   font-variant-numeric:tabular-nums;
   transition:transform 0.2s var(--ease-spring);
   display:inline-block;
@@ -506,7 +490,7 @@ header.scrolled{background:rgba(9,9,11,0.95)}
 .card:hover .multiple-val{transform:scale(1.04)}
 .multiple-lbl{
   font-family:var(--font-mono);
-  font-size:10px;color:var(--text-tertiary);
+  font-size:10px;font-weight:500;color:var(--text-tertiary);
   text-transform:uppercase;letter-spacing:0.08em;
   padding-bottom:2px;
 }
@@ -528,13 +512,13 @@ header.scrolled{background:rgba(9,9,11,0.95)}
 .info-row{display:flex;gap:12px;align-items:flex-start}
 .info-key{
   font-family:var(--font-mono);
-  font-size:10px;color:var(--text-tertiary);
+  font-size:10px;font-weight:500;color:var(--text-tertiary);
   text-transform:uppercase;letter-spacing:0.08em;
-  min-width:50px;padding-top:1px;flex-shrink:0;
+  min-width:62px;padding-top:1px;flex-shrink:0;
 }
 .info-val{
-  font-size:12px;color:var(--text-secondary);
-  line-height:1.55;flex:1;
+  font-size:13px;font-weight:500;color:#e4e4e7;
+  line-height:1.55;flex:1;letter-spacing:-0.01em;padding-left:0;
 }
 
 .urg-badge{
@@ -732,12 +716,12 @@ footer{
   header{padding:0 1.25rem}
   .hero{padding:0 1.25rem}
   .hero-h1{letter-spacing:-0.04em}
-  .section-header,.stats-section,.grid-section,footer{padding-left:1.25rem;padding-right:1.25rem}
+  .stats-section,.grid-section,footer{padding-left:1.25rem;padding-right:1.25rem}
   .toolbar{padding-left:1.25rem;padding-right:1.25rem}
   .stats-row{flex-wrap:wrap}
   .stat-cell{flex:1 1 45%;padding-right:16px;padding-bottom:20px}
   .cards-grid{grid-template-columns:1fr}
-  .toolbar{flex-direction:column;align-items:flex-start}
+  .toolbar{align-items:center}
   .modal-multiple-val{font-size:48px}
   .modal-inner{padding:20px 20px 28px}
 }
@@ -774,11 +758,6 @@ footer{
   </div>
 </section>
 
-<div class="section-header">
-  <span class="section-num">01</span>
-  <div class="section-rule"></div>
-</div>
-
 <div class="stats-section" id="stats-section">
   <div class="stats-row">
     <div class="stat-cell">
@@ -796,7 +775,7 @@ footer{
       <div class="stat-hint">click to sort</div>
     </div>
     <div class="stat-cell">
-      <div class="stat-value" id="stat-updated" style="font-size:18px;letter-spacing:-0.02em;padding-top:5px">—</div>
+      <div class="stat-value" id="stat-updated">—</div>
       <div class="stat-label">Last refreshed</div>
     </div>
   </div>
@@ -830,11 +809,6 @@ footer{
       <option value="name">Sort: A – Z</option>
     </select>
   </div>
-</div>
-
-<div class="section-header" style="margin-top:24px">
-  <span class="section-num">02</span>
-  <div class="section-rule"></div>
 </div>
 
 <div class="grid-section">
@@ -908,17 +882,19 @@ function countUp(el, target, suffix='', dur=900) {
 
 // ── Scroll effects ─────────────────────────────────────────────────────────
 const hdr = document.getElementById('header');
-window.addEventListener('scroll', () => {
-  hdr.classList.toggle('scrolled', window.scrollY > 60);
-}, { passive: true });
-
-// Hero parallax
-const heroH1 = document.getElementById('hero-h1');
+const heroSub = document.querySelector('.hero-sub');
 let rafPending = false;
 window.addEventListener('scroll', () => {
+  const y = window.scrollY;
+  hdr.classList.toggle('scrolled', y > 60);
   if (!rafPending) {
     requestAnimationFrame(() => {
-      if (heroH1) heroH1.style.transform = `translateY(${window.scrollY * 0.25}px)`;
+      // Subtitle fade + blur exit (0–200px scroll)
+      if (heroSub) {
+        const t = Math.min(1, y / 200);
+        heroSub.style.opacity = 1 - t;
+        heroSub.style.filter = `blur(${(t * 6).toFixed(1)}px)`;
+      }
       rafPending = false;
     });
     rafPending = true;
@@ -1041,7 +1017,14 @@ function updateStats(lu) {
   countUp(document.getElementById('stat-total'),total);
   countUp(document.getElementById('stat-now'),nowCt);
   setTimeout(()=>countUp(document.getElementById('stat-max'),mx,'×',700),150);
-  document.getElementById('stat-updated').textContent=lu||'—';
+  let dateStr = '—';
+  if (lu && lu !== 'demo mode') {
+    const d = new Date(lu);
+    if (!isNaN(d.getTime())) {
+      dateStr = d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    }
+  }
+  document.getElementById('stat-updated').textContent = dateStr;
   document.getElementById('header-count').textContent=total;
   document.getElementById('header-date').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
 }

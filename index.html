@@ -3,229 +3,1105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Resale Radar</title>
+<title>Resale Radar — Ticket Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0a0a0a; --surface: #111111; --surface-2: #1a1a1a;
-    --border: rgba(255,255,255,0.08); --border-strong: rgba(255,255,255,0.15);
-    --text: #f0ede8; --text-muted: #888880; --text-dim: #444440;
-    --accent: #e8ff47; --red: #ff4d3a; --amber: #ffaa2a; --green: #3aff8a; --blue: #3ab8ff; --purple: #c87eff;
-    --font-display: 'Syne', sans-serif; --font-mono: 'DM Mono', monospace;
-  }
-  body { background: var(--bg); color: var(--text); font-family: var(--font-display); min-height: 100vh; overflow-x: hidden; }
-  header { border-bottom: 1px solid var(--border); padding: 0 2rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; background: rgba(10,10,10,0.92); backdrop-filter: blur(12px); z-index: 100; }
-  .logo { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; display: flex; align-items: center; gap: 8px; }
-  .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.5;transform:scale(0.8)} }
-  .last-updated { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
-  .hero { padding: 3.5rem 2rem 2rem; max-width: 1100px; margin: 0 auto; }
-  .hero-label { font-family: var(--font-mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 1rem; }
-  .hero h1 { font-size: clamp(36px, 6vw, 64px); font-weight: 800; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 1rem; }
-  .hero h1 span { color: var(--accent); }
-  .hero-sub { font-size: 15px; color: var(--text-muted); font-weight: 400; max-width: 480px; line-height: 1.6; }
-  .stats-bar { max-width: 1100px; margin: 2rem auto 0; padding: 0 2rem 2rem; display: flex; gap: 2rem; border-bottom: 1px solid var(--border); }
-  .stat { display: flex; flex-direction: column; gap: 2px; }
-  .stat-value { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
-  .stat-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; }
-  .filters-section { max-width: 1100px; margin: 0 auto; padding: 1.5rem 2rem; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-  .filter-label { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-right: 4px; }
-  .filter-btn { font-family: var(--font-mono); font-size: 11px; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-strong); background: transparent; color: var(--text-muted); cursor: pointer; transition: all 0.15s; letter-spacing: 0.04em; }
-  .filter-btn:hover { border-color: var(--accent); color: var(--accent); }
-  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0a0a; font-weight: 500; }
-  .filter-divider { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
-  .cards-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
-  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.4rem; display: flex; flex-direction: column; gap: 0; transition: border-color 0.2s, transform 0.2s; animation: fadeUp 0.3s ease both; }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)} }
-  .card:hover { border-color: var(--border-strong); transform: translateY(-2px); }
-  .card.urgency-now  { border-top: 2px solid var(--red); }
-  .card.urgency-soon { border-top: 2px solid var(--amber); }
-  .card.urgency-watch{ border-top: 2px solid var(--blue); }
-  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 1rem; }
-  .event-name { font-size: 15px; font-weight: 700; line-height: 1.3; letter-spacing: -0.01em; flex: 1; }
-  .type-badge { font-family: var(--font-mono); font-size: 10px; padding: 3px 9px; border-radius: 20px; border: 1px solid; white-space: nowrap; flex-shrink: 0; letter-spacing: 0.04em; }
-  .type-sports  { border-color: rgba(58,184,255,0.4); color: var(--blue); }
-  .type-concert { border-color: rgba(200,126,255,0.4); color: var(--purple); }
-  .type-festival{ border-color: rgba(58,255,138,0.4); color: var(--green); }
-  .card-divider { height: 1px; background: var(--border); margin-bottom: 1rem; }
-  .multiple-block { margin-bottom: 1rem; }
-  .multiple-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 6px; }
-  .multiple-value { font-size: 30px; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
-  .multiple-label { font-family: var(--font-mono); font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-  .heat-track { height: 3px; background: var(--surface-2); border-radius: 2px; overflow: hidden; }
-  .heat-fill { height: 100%; border-radius: 2px; }
-  .info-block { display: flex; flex-direction: column; gap: 8px; }
-  .info-row { display: flex; gap: 10px; font-size: 12px; line-height: 1.5; }
-  .info-key { font-family: var(--font-mono); color: var(--text-dim); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; min-width: 54px; padding-top: 2px; flex-shrink: 0; }
-  .info-val { color: var(--text-muted); flex: 1; }
-  .urgency-tag { font-family: var(--font-mono); font-size: 10px; padding: 2px 8px; border-radius: 20px; letter-spacing: 0.06em; display: inline-block; }
-  .tag-now   { background: rgba(255,77,58,0.15);  color: var(--red);   border: 1px solid rgba(255,77,58,0.3); }
-  .tag-soon  { background: rgba(255,170,42,0.15); color: var(--amber); border: 1px solid rgba(255,170,42,0.3); }
-  .tag-watch { background: rgba(58,184,255,0.15); color: var(--blue);  border: 1px solid rgba(58,184,255,0.3); }
-  .empty-state   { text-align:center; padding:4rem 2rem; color:var(--text-dim); font-family:var(--font-mono); font-size:13px; grid-column:1/-1; }
-  .loading-state { text-align:center; padding:4rem 2rem; font-family:var(--font-mono); font-size:12px; color:var(--text-muted); grid-column:1/-1; letter-spacing:0.06em; }
-  .loading-dots::after { content:''; animation: dots 1.2s infinite; }
-  @keyframes dots { 0%{content:''}33%{content:'.'}66%{content:'..'}100%{content:'...'} }
-  .error-banner { background:rgba(255,77,58,0.08); border:1px solid rgba(255,77,58,0.2); border-radius:8px; padding:12px 16px; font-family:var(--font-mono); font-size:12px; color:var(--red); margin-bottom:1rem; display:none; }
-  footer { border-top:1px solid var(--border); padding:1.5rem 2rem; display:flex; align-items:center; justify-content:space-between; max-width:1100px; margin:0 auto; }
-  .footer-text { font-family:var(--font-mono); font-size:11px; color:var(--text-dim); }
-  @media (max-width:640px) {
-    header,.hero,.stats-bar,.filters-section,.cards-section{padding-left:1rem;padding-right:1rem}
-    .stats-bar{gap:1.2rem} .cards-grid{grid-template-columns:1fr}
-  }
+/* ─── RESET ──────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ─── TOKENS ─────────────────────────────────────────────────────────────── */
+:root{
+  --bg:#07070B;
+  --surface:#0C0C12;
+  --elevated:#121220;
+  --surface-hi:#181826;
+
+  --border:rgba(255,255,255,0.06);
+  --border-mid:rgba(255,255,255,0.10);
+  --border-hi:rgba(255,255,255,0.17);
+
+  --text:#EDEDF4;
+  --text-2:#86869C;
+  --text-3:#3E3E55;
+
+  --now:#E84040;
+  --now-dim:rgba(232,64,64,0.09);
+  --now-glow:rgba(232,64,64,0.16);
+
+  --soon:#E8A020;
+  --soon-dim:rgba(232,160,32,0.09);
+  --soon-glow:rgba(232,160,32,0.14);
+
+  --watch:#4480FF;
+  --watch-dim:rgba(68,128,255,0.09);
+  --watch-glow:rgba(68,128,255,0.14);
+
+  --live:#20D490;
+
+  --font-display:'Syne',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --font-body:'DM Sans',sans-serif;
+
+  --r-xs:4px;--r-sm:6px;--r-md:10px;--r-lg:14px;--r-xl:20px;
+  --ease-out:cubic-bezier(0.16,1,0.3,1);
+  --ease-spring:cubic-bezier(0.34,1.56,0.64,1);
+  --ease-io:cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ─── BASE ───────────────────────────────────────────────────────────────── */
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  min-height:100vh;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* ─── BACKGROUND — dot grid + grain ─────────────────────────────────────── */
+body::before{
+  content:'';
+  position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(255,255,255,0.055) 1px,transparent 1px);
+  background-size:22px 22px;
+  pointer-events:none;
+  z-index:0;
+  mask-image:
+    radial-gradient(ellipse 90% 60% at 50% 0%,black 0%,transparent 100%),
+    radial-gradient(ellipse 100% 40% at 50% 100%,rgba(0,0,0,0.4) 0%,transparent 100%);
+  -webkit-mask-image:
+    radial-gradient(ellipse 90% 60% at 50% 0%,black 0%,transparent 100%),
+    radial-gradient(ellipse 100% 40% at 50% 100%,rgba(0,0,0,0.4) 0%,transparent 100%);
+  mask-composite:add;
+  -webkit-mask-composite:source-over;
+  opacity:0.9;
+}
+body::after{
+  content:'';
+  position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity:0.016;
+  pointer-events:none;
+  z-index:9000;
+}
+
+/* ─── HEADER ─────────────────────────────────────────────────────────────── */
+header{
+  position:sticky;top:0;z-index:200;
+  height:54px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 2.5rem;
+  background:rgba(7,7,11,0.85);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  border-bottom:1px solid var(--border);
+}
+.logo{
+  display:flex;align-items:center;gap:11px;
+  text-decoration:none;color:var(--text);
+}
+/* Animated radar mark */
+.logo-mark{
+  width:26px;height:26px;
+  flex-shrink:0;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.logo-mark::before{
+  content:'';
+  position:absolute;inset:0;
+  border:1px solid rgba(232,160,32,0.25);
+  border-radius:50%;
+}
+.logo-mark::after{
+  content:'';
+  position:absolute;
+  width:8px;height:8px;
+  background:var(--soon);
+  border-radius:50%;
+  box-shadow:0 0 8px var(--soon-glow);
+  animation:radar 2.8s ease-in-out infinite;
+}
+@keyframes radar{
+  0%{transform:scale(0.55);opacity:1;box-shadow:0 0 0 0 rgba(232,160,32,0.6)}
+  65%{transform:scale(1.05);opacity:0.85;box-shadow:0 0 0 9px rgba(232,160,32,0)}
+  100%{transform:scale(0.55);opacity:1;box-shadow:0 0 0 0 rgba(232,160,32,0)}
+}
+.logo-name{
+  font-family:var(--font-display);
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:-0.02em;
+}
+.logo-name span{color:var(--text-2);font-weight:600}
+.header-right{display:flex;align-items:center;gap:12px}
+.header-date{
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  color:var(--text-3);
+  letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.live-badge{
+  display:flex;align-items:center;gap:7px;
+  padding:4px 11px;
+  border-radius:var(--r-sm);
+  background:rgba(32,212,144,0.06);
+  border:1px solid rgba(32,212,144,0.15);
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  color:var(--live);
+  letter-spacing:0.06em;
+  font-weight:500;
+  text-transform:uppercase;
+}
+.live-pip{
+  width:5px;height:5px;
+  border-radius:50%;
+  background:var(--live);
+  flex-shrink:0;
+  animation:pip 2.2s ease-in-out infinite;
+}
+@keyframes pip{
+  0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(32,212,144,0.5)}
+  55%{opacity:0.75;box-shadow:0 0 0 5px rgba(32,212,144,0)}
+}
+
+/* ─── HERO ───────────────────────────────────────────────────────────────── */
+.hero{
+  position:relative;z-index:1;
+  max-width:1200px;margin:0 auto;
+  padding:84px 2.5rem 56px;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  color:var(--text-3);
+  letter-spacing:0.18em;
+  text-transform:uppercase;
+  margin-bottom:20px;
+}
+.hero-eyebrow::before{
+  content:'//';
+  color:var(--soon);
+  font-size:11px;
+  letter-spacing:-0.05em;
+  font-weight:600;
+  opacity:0.85;
+}
+.hero-h1{
+  font-family:var(--font-display);
+  font-size:clamp(44px,5.8vw,76px);
+  font-weight:800;
+  line-height:0.98;
+  letter-spacing:-0.045em;
+  color:var(--text);
+  margin-bottom:22px;
+}
+.hero-h1 em{
+  font-style:normal;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(232,160,32,0.7);
+  background:linear-gradient(135deg,var(--soon) 0%,rgba(232,160,32,0.6) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.hero-sub{
+  font-size:14px;
+  font-weight:300;
+  line-height:1.8;
+  color:var(--text-2);
+  max-width:460px;
+  letter-spacing:0.01em;
+  font-style:italic;
+}
+
+/* ─── STATS ──────────────────────────────────────────────────────────────── */
+.stats-section{
+  position:relative;z-index:1;
+  max-width:1200px;margin:0 auto;
+  padding:0 2.5rem 44px;
+}
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  background:var(--surface);
+  overflow:hidden;
+  position:relative;
+}
+/* Top highlight line */
+.stats-grid::after{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.07) 20%,rgba(255,255,255,0.07) 80%,transparent 100%);
+  pointer-events:none;
+}
+.stat-cell{
+  padding:26px 28px 24px;
+  border-right:1px solid var(--border);
+  position:relative;
+  overflow:hidden;
+  transition:background 0.18s;
+}
+.stat-cell:last-child{border-right:none}
+.stat-cell::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;height:2px;
+  background:transparent;
+  transition:background 0.3s;
+}
+.stat-cell:hover{background:var(--elevated)}
+.stat-cell.clickable{cursor:pointer}
+.stat-cell.clickable:active{transform:scale(0.99)}
+.stat-cell.stat-active{background:var(--elevated)}
+.stat-cell.stat-active::after{background:var(--soon)}
+.stat-cell.stat-active .stat-label::after{
+  content:' · active';
+  color:var(--soon);
+  font-size:8px;
+  opacity:0.75;
+}
+.stat-hint{
+  font-family:var(--font-mono);
+  font-size:8px;
+  color:var(--text-3);
+  letter-spacing:0.1em;
+  margin-top:7px;
+  opacity:0;
+  transition:opacity 0.15s;
+  text-transform:uppercase;
+}
+.stat-cell.clickable:hover .stat-hint{opacity:1}
+.stat-value{
+  font-family:var(--font-mono);
+  font-size:34px;
+  font-weight:600;
+  letter-spacing:-0.04em;
+  line-height:1;
+  margin-bottom:9px;
+  color:var(--text);
+  font-variant-numeric:tabular-nums;
+}
+.stat-value.ar{color:var(--now)}
+.stat-value.ab{color:var(--watch)}
+.stat-value.aa{color:var(--soon)}
+.stat-label{
+  font-family:var(--font-mono);
+  font-size:8.5px;
+  color:var(--text-3);
+  text-transform:uppercase;
+  letter-spacing:0.13em;
+}
+
+/* ─── TOOLBAR ────────────────────────────────────────────────────────────── */
+.toolbar{
+  position:relative;z-index:1;
+  max-width:1200px;margin:0 auto;
+  padding:0 2.5rem 24px;
+  display:flex;align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;gap:10px;
+}
+.filter-groups{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.filter-group{
+  display:flex;align-items:center;gap:2px;
+}
+.filter-group-label{
+  font-family:var(--font-mono);
+  font-size:8.5px;
+  color:var(--text-3);
+  text-transform:uppercase;
+  letter-spacing:0.14em;
+  padding:0 8px 0 4px;
+  white-space:nowrap;
+  user-select:none;
+}
+.filter-divider{
+  width:1px;height:14px;
+  background:var(--border-mid);
+  margin:0 6px;
+  flex-shrink:0;
+}
+.filter-btn{
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  font-weight:500;
+  letter-spacing:0.06em;
+  padding:5px 11px;
+  border-radius:var(--r-sm);
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--text-3);
+  cursor:pointer;
+  transition:color 0.12s,background 0.12s,border-color 0.12s;
+  white-space:nowrap;
+  text-transform:uppercase;
+}
+.filter-btn:hover{
+  color:var(--text-2);
+  background:rgba(255,255,255,0.04);
+  border-color:var(--border);
+}
+.filter-btn.active{
+  background:var(--elevated);
+  color:var(--text);
+  border-color:var(--border-mid);
+}
+.filter-btn[data-value="now"].active{
+  color:var(--now);background:var(--now-dim);
+  border-color:rgba(232,64,64,0.22);
+}
+.filter-btn[data-value="soon"].active{
+  color:var(--soon);background:var(--soon-dim);
+  border-color:rgba(232,160,32,0.22);
+}
+.filter-btn[data-value="watch"].active{
+  color:var(--watch);background:var(--watch-dim);
+  border-color:rgba(68,128,255,0.22);
+}
+.filter-btn[data-value="saved"].active{
+  color:var(--soon);background:var(--soon-dim);
+  border-color:rgba(232,160,32,0.22);
+}
+.toolbar-right{display:flex;align-items:center;gap:10px}
+.result-count{
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  color:var(--text-3);
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+.sort-select{
+  font-family:var(--font-mono);
+  font-size:9.5px;
+  color:var(--text-2);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  padding:6px 26px 6px 10px;
+  cursor:pointer;outline:none;
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%233E3E55' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 8px center;
+  transition:border-color 0.12s,color 0.12s;
+  letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+.sort-select:hover{border-color:var(--border-mid);color:var(--text)}
+.sort-select option{background:#0C0C12}
+
+/* ─── GRID ───────────────────────────────────────────────────────────────── */
+.grid-section{
+  position:relative;z-index:1;
+  max-width:1200px;margin:0 auto;
+  padding:0 2.5rem 100px;
+}
+.cards-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(340px,1fr));
+  gap:10px;
+  transition:opacity 0.15s,transform 0.15s;
+}
+
+/* ─── CARD ───────────────────────────────────────────────────────────────── */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:0;cursor:pointer;
+  position:relative;overflow:hidden;
+  will-change:transform,box-shadow;
+  opacity:0;transform:translateY(14px);
+  transition:
+    opacity 0.45s var(--ease-out),
+    transform 0.45s var(--ease-out),
+    border-color 0.2s,
+    box-shadow 0.2s,
+    background 0.2s;
+}
+.card.in{opacity:1;transform:translateY(0)}
+.card:hover{
+  background:var(--elevated);
+  border-color:var(--border-mid);
+  transform:translateY(-3px);
+}
+.card.in:hover{transform:translateY(-3px)}
+
+/* Left urgency stripe (vertical) */
+.card-stripe{
+  position:absolute;
+  left:0;top:0;bottom:0;
+  width:3px;
+}
+.urgency-now .card-stripe{background:var(--now)}
+.urgency-soon .card-stripe{background:var(--soon)}
+.urgency-watch .card-stripe{background:var(--watch)}
+
+.urgency-now:hover{
+  box-shadow:0 16px 48px rgba(0,0,0,0.45),
+             -4px 0 24px -4px var(--now-glow),
+             0 0 0 1px rgba(232,64,64,0.12);
+}
+.urgency-soon:hover{
+  box-shadow:0 16px 48px rgba(0,0,0,0.45),
+             -4px 0 24px -4px var(--soon-glow),
+             0 0 0 1px rgba(232,160,32,0.12);
+}
+.urgency-watch:hover{
+  box-shadow:0 16px 48px rgba(0,0,0,0.45),
+             -4px 0 24px -4px var(--watch-glow),
+             0 0 0 1px rgba(68,128,255,0.12);
+}
+
+.card-shimmer{
+  position:absolute;inset:0;
+  pointer-events:none;opacity:0;
+  transition:opacity 0.22s;
+  border-radius:inherit;
+}
+.card:hover .card-shimmer{opacity:1}
+
+/* Left padding to clear the stripe */
+.card-body{padding:18px 20px 22px 24px}
+
+.card-header{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;margin-bottom:14px;
+}
+.event-name{
+  font-family:var(--font-display);
+  font-size:13px;font-weight:700;
+  line-height:1.35;letter-spacing:-0.015em;
+  color:var(--text);flex:1;
+}
+.save-btn{
+  background:none;border:none;cursor:pointer;
+  font-size:13px;line-height:1;
+  color:var(--text-3);padding:2px 3px;
+  flex-shrink:0;margin-top:2px;
+  transition:color 0.15s,transform 0.2s var(--ease-spring);
+  display:flex;align-items:center;
+}
+.save-btn:hover{color:var(--soon)}
+.save-btn.saved{color:var(--soon);text-shadow:0 0 8px rgba(232,160,32,0.4)}
+.save-btn.pop{transform:scale(1.45)}
+.type-tag{
+  font-family:var(--font-mono);
+  font-size:8px;font-weight:500;
+  letter-spacing:0.11em;text-transform:uppercase;
+  padding:2px 7px;border-radius:var(--r-xs);
+  border:1px solid;white-space:nowrap;
+  flex-shrink:0;margin-top:2px;
+}
+.tag-sports{color:var(--watch);border-color:rgba(68,128,255,0.2);background:rgba(68,128,255,0.07)}
+.tag-concert{color:var(--text-3);border-color:var(--border);background:rgba(255,255,255,0.025)}
+.tag-festival{color:var(--soon);border-color:rgba(232,160,32,0.2);background:rgba(232,160,32,0.07)}
+
+.card-rule{height:1px;background:var(--border);margin-bottom:14px}
+
+.multiple-row{display:flex;align-items:baseline;gap:7px;margin-bottom:4px}
+.multiple-val{
+  font-family:var(--font-mono);
+  font-size:38px;font-weight:600;
+  letter-spacing:-0.045em;line-height:1;
+  color:var(--text);font-variant-numeric:tabular-nums;
+  transition:transform 0.22s var(--ease-spring);
+  display:inline-block;
+}
+.card:hover .multiple-val{transform:scale(1.03)}
+.multiple-lbl{
+  font-family:var(--font-mono);
+  font-size:8px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.13em;
+  padding-bottom:3px;
+}
+.heat-wrap{margin-bottom:16px}
+.heat-track{
+  height:1px;
+  background:rgba(255,255,255,0.055);
+  border-radius:1px;overflow:hidden;
+}
+.heat-fill{
+  height:100%;border-radius:1px;
+  transform-origin:left center;
+  transform:scaleX(0);
+  transition:transform 1.1s var(--ease-out);
+}
+.card.in .heat-fill{transform:scaleX(1)}
+
+.info-rows{display:flex;flex-direction:column;gap:8px}
+.info-row{display:flex;gap:12px;align-items:flex-start}
+.info-key{
+  font-family:var(--font-mono);
+  font-size:8px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.13em;
+  min-width:46px;padding-top:2px;flex-shrink:0;
+}
+.info-val{
+  font-size:11px;color:var(--text-2);
+  line-height:1.6;flex:1;font-weight:400;
+}
+
+.urg-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--font-mono);
+  font-size:8px;font-weight:500;
+  letter-spacing:0.09em;text-transform:uppercase;
+  padding:2px 7px;border-radius:var(--r-xs);border:1px solid;
+}
+.urg-pip{width:4px;height:4px;border-radius:50%;flex-shrink:0}
+.urg-now{color:var(--now);border-color:rgba(232,64,64,0.25);background:var(--now-dim)}
+.urg-now .urg-pip{background:var(--now);animation:pip 1.5s ease-in-out infinite}
+.urg-soon{color:var(--soon);border-color:rgba(232,160,32,0.25);background:var(--soon-dim)}
+.urg-soon .urg-pip{background:var(--soon)}
+.urg-watch{color:var(--watch);border-color:rgba(68,128,255,0.25);background:var(--watch-dim)}
+.urg-watch .urg-pip{background:var(--watch)}
+
+/* ─── MODAL ──────────────────────────────────────────────────────────────── */
+.modal-veil{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,0.72);
+  backdrop-filter:blur(18px) saturate(130%);
+  -webkit-backdrop-filter:blur(18px) saturate(130%);
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.25s var(--ease-io);
+}
+.modal-veil.open{opacity:1;pointer-events:all}
+.modal-box{
+  background:var(--elevated);
+  border:1px solid var(--border-mid);
+  border-radius:var(--r-xl);
+  width:100%;max-width:520px;max-height:88vh;
+  overflow-y:auto;position:relative;
+  transform:scale(0.97) translateY(16px);opacity:0;
+  transition:transform 0.4s var(--ease-out),opacity 0.25s;
+  box-shadow:0 48px 120px rgba(0,0,0,0.75),0 0 0 1px rgba(255,255,255,0.04);
+}
+.modal-veil.open .modal-box{transform:scale(1) translateY(0);opacity:1}
+.modal-stripe{height:3px;border-radius:var(--r-xl) var(--r-xl) 0 0}
+.modal-inner{padding:28px 32px 34px}
+.modal-top-row{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:12px;margin-bottom:8px;
+}
+.modal-close-btn{
+  width:28px;height:28px;border-radius:var(--r-sm);
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  color:var(--text-3);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;flex-shrink:0;
+  transition:background 0.15s,color 0.15s;
+  font-family:var(--font-mono);line-height:1;
+}
+.modal-close-btn:hover{background:rgba(255,255,255,0.08);color:var(--text-2)}
+.modal-name{
+  font-family:var(--font-display);
+  font-size:24px;font-weight:700;
+  letter-spacing:-0.03em;line-height:1.2;
+  color:var(--text);margin-bottom:24px;
+}
+.modal-multiple-val{
+  font-family:var(--font-mono);
+  font-size:68px;font-weight:600;
+  letter-spacing:-0.05em;line-height:1;
+  color:var(--text);font-variant-numeric:tabular-nums;
+  margin-bottom:5px;
+}
+.modal-multiple-sub{
+  font-family:var(--font-mono);
+  font-size:8.5px;color:var(--text-3);
+  text-transform:uppercase;letter-spacing:0.14em;
+  margin-bottom:20px;
+}
+.modal-heat-track{
+  height:2px;background:rgba(255,255,255,0.05);
+  border-radius:2px;overflow:hidden;margin-bottom:28px;
+}
+.modal-heat-fill{
+  height:100%;border-radius:2px;
+  transform-origin:left;transform:scaleX(0);
+  transition:transform 0.8s var(--ease-out);
+}
+.modal-veil.open .modal-heat-fill{transform:scaleX(1)}
+.modal-rule{height:1px;background:var(--border);margin-bottom:24px}
+.modal-details{display:flex;flex-direction:column;gap:18px;margin-bottom:28px}
+.modal-detail{display:flex;flex-direction:column;gap:5px}
+.modal-detail-key{
+  font-family:var(--font-mono);font-size:8.5px;
+  color:var(--text-3);text-transform:uppercase;letter-spacing:0.13em;
+}
+.modal-detail-val{font-size:13px;color:var(--text-2);line-height:1.65}
+.modal-actions{display:flex;gap:8px;flex-wrap:wrap}
+.modal-action-btn{
+  font-family:var(--font-mono);font-size:9.5px;font-weight:500;
+  letter-spacing:0.07em;text-transform:uppercase;
+  padding:10px 16px;border-radius:var(--r-sm);
+  border:1px solid var(--border-mid);
+  background:rgba(255,255,255,0.03);
+  color:var(--text-2);cursor:pointer;text-decoration:none;
+  display:inline-flex;align-items:center;gap:5px;
+  transition:background 0.15s,color 0.15s,border-color 0.15s,transform 0.15s;
+}
+.modal-action-btn:hover{
+  background:rgba(255,255,255,0.07);color:var(--text);
+  border-color:var(--border-hi);transform:translateY(-1px);
+}
+.modal-action-btn.primary{
+  background:var(--text);color:var(--bg);border-color:var(--text);
+}
+.modal-action-btn.primary:hover{background:rgba(237,237,244,0.88)}
+
+/* ─── STATES ─────────────────────────────────────────────────────────────── */
+.state-empty{
+  grid-column:1/-1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:80px 2rem;gap:14px;
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  background:var(--surface);
+}
+.state-empty p{
+  font-family:var(--font-mono);font-size:10.5px;
+  color:var(--text-3);letter-spacing:0.05em;
+  text-align:center;max-width:340px;line-height:1.85;
+}
+.spinner{
+  width:18px;height:18px;
+  border:1.5px solid var(--border);
+  border-top-color:var(--text-3);
+  border-radius:50%;animation:spin 0.8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────────── */
+footer{
+  position:relative;z-index:1;
+  border-top:1px solid var(--border);
+  max-width:1200px;margin:0 auto;
+  padding:22px 2.5rem;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+}
+.footer-l,.footer-r{
+  font-family:var(--font-mono);font-size:9px;
+  color:var(--text-3);letter-spacing:0.09em;text-transform:uppercase;
+}
+.footer-r code{
+  background:var(--elevated);border:1px solid var(--border);
+  padding:2px 6px;border-radius:var(--r-xs);
+  font-family:inherit;text-transform:none;letter-spacing:0;
+  font-size:9px;
+}
+
+/* ─── SCROLLBAR ──────────────────────────────────────────────────────────── */
+::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-mid);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:var(--border-hi)}
+
+/* ─── RESPONSIVE ─────────────────────────────────────────────────────────── */
+@media(max-width:768px){
+  header{padding:0 1.5rem}
+  .hero{padding:56px 1.5rem 40px}
+  .stats-section,.toolbar,.grid-section,footer{padding-left:1.5rem;padding-right:1.5rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr)}
+  .stat-cell:nth-child(2){border-right:none}
+  .stat-cell:nth-child(3){border-right:1px solid var(--border);border-top:1px solid var(--border)}
+  .stat-cell:nth-child(4){border-top:1px solid var(--border);border-right:none}
+  .cards-grid{grid-template-columns:1fr}
+  .toolbar{flex-direction:column;align-items:flex-start}
+  .modal-multiple-val{font-size:50px}
+  .modal-inner{padding:22px 22px 28px}
+}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="logo"><div class="logo-dot"></div>Resale Radar</div>
-  <div class="last-updated" id="last-updated">loading...</div>
+  <a class="logo" href="#">
+    <div class="logo-mark" aria-hidden="true"></div>
+    <span class="logo-name">Resale <span>Radar</span></span>
+  </a>
+  <div class="header-right">
+    <div class="header-date" id="header-date"></div>
+    <div class="live-badge">
+      <div class="live-pip" aria-hidden="true"></div>
+      <span id="header-count">—</span>&nbsp;events
+    </div>
+  </div>
 </header>
 
-<div class="hero">
-  <div class="hero-label">Live ticket intelligence</div>
-  <h1>Buy retail.<br><span>Sell at a premium.</span></h1>
-  <p class="hero-sub">Upcoming events going on sale with strong secondary market upside. Powered by Claude AI research.</p>
+<section class="hero">
+  <div class="hero-eyebrow">Ticket Intelligence Platform</div>
+  <h1 class="hero-h1">Buy retail.<br><em>Sell at a premium.</em></h1>
+  <p class="hero-sub">Upcoming events going on sale with strong secondary market upside — researched and scored by AI, updated on demand.</p>
+</section>
+
+<div class="stats-section">
+  <div class="stats-grid">
+    <div class="stat-cell">
+      <div class="stat-value" id="stat-total">—</div>
+      <div class="stat-label">Events tracked</div>
+    </div>
+    <div class="stat-cell clickable" id="stat-cell-now" title="Click to filter">
+      <div class="stat-value ar" id="stat-now">—</div>
+      <div class="stat-label">On sale now</div>
+      <div class="stat-hint">↑ click to filter</div>
+    </div>
+    <div class="stat-cell clickable" id="stat-cell-max" title="Click to sort by multiple">
+      <div class="stat-value aa" id="stat-max">—</div>
+      <div class="stat-label">Max resale multiple</div>
+      <div class="stat-hint">↑ click to sort</div>
+    </div>
+    <div class="stat-cell">
+      <div class="stat-value" id="stat-updated" style="font-size:17px;padding-top:6px;letter-spacing:-0.01em">—</div>
+      <div class="stat-label">Last refreshed</div>
+    </div>
+  </div>
 </div>
 
-<div class="stats-bar">
-  <div class="stat"><div class="stat-value" id="stat-total">—</div><div class="stat-label">Events tracked</div></div>
-  <div class="stat"><div class="stat-value" id="stat-now" style="color:var(--red)">—</div><div class="stat-label">On sale now</div></div>
-  <div class="stat"><div class="stat-value" id="stat-max" style="color:var(--accent)">—</div><div class="stat-label">Max resale multiple</div></div>
+<div class="toolbar">
+  <div class="filter-groups">
+    <div class="filter-group">
+      <span class="filter-group-label">Type</span>
+      <button class="filter-btn active" data-filter="type" data-value="all">All</button>
+      <button class="filter-btn" data-filter="type" data-value="Sports">Sports</button>
+      <button class="filter-btn" data-filter="type" data-value="Concert">Concert</button>
+      <button class="filter-btn" data-filter="type" data-value="Festival">Festival</button>
+    </div>
+    <div class="filter-divider" aria-hidden="true"></div>
+    <div class="filter-group">
+      <span class="filter-group-label">Urgency</span>
+      <button class="filter-btn active" data-filter="urgency" data-value="all">All</button>
+      <button class="filter-btn" data-filter="urgency" data-value="now">Act now</button>
+      <button class="filter-btn" data-filter="urgency" data-value="soon">Soon</button>
+      <button class="filter-btn" data-filter="urgency" data-value="watch">Watch</button>
+      <button class="filter-btn" data-filter="urgency" data-value="saved">★ Saved</button>
+    </div>
+  </div>
+  <div class="toolbar-right">
+    <span class="result-count" id="result-count"></span>
+    <select class="sort-select" id="sort-select">
+      <option value="urgency">Sort: Urgency</option>
+      <option value="multiple">Sort: Highest multiple</option>
+      <option value="name">Sort: A – Z</option>
+    </select>
+  </div>
 </div>
 
-<div class="filters-section">
-  <span class="filter-label">Type</span>
-  <button class="filter-btn active" data-filter="type" data-value="all">All</button>
-  <button class="filter-btn" data-filter="type" data-value="Sports">Sports</button>
-  <button class="filter-btn" data-filter="type" data-value="Concert">Concert</button>
-  <button class="filter-btn" data-filter="type" data-value="Festival">Festival</button>
-  <div class="filter-divider"></div>
-  <span class="filter-label">Urgency</span>
-  <button class="filter-btn active" data-filter="urgency" data-value="all">All</button>
-  <button class="filter-btn" data-filter="urgency" data-value="now"   style="color:var(--red);border-color:rgba(255,77,58,0.3)">Act now</button>
-  <button class="filter-btn" data-filter="urgency" data-value="soon"  style="color:var(--amber);border-color:rgba(255,170,42,0.3)">Soon</button>
-  <button class="filter-btn" data-filter="urgency" data-value="watch" style="color:var(--blue);border-color:rgba(58,184,255,0.3)">Watch</button>
-</div>
-
-<div class="cards-section">
-  <div id="error-banner" class="error-banner"></div>
+<div class="grid-section">
   <div class="cards-grid" id="cards-grid">
-    <div class="loading-state">Fetching events<span class="loading-dots"></span></div>
+    <div class="state-empty">
+      <div class="spinner" aria-hidden="true"></div>
+      <p>Fetching events…</p>
+    </div>
   </div>
 </div>
 
 <footer>
-  <div class="footer-text">Powered by Claude AI &mdash; run <code>node refresh.js</code> to update</div>
+  <div class="footer-l">Powered by Claude AI</div>
+  <div class="footer-r">Auto-refresh via GitHub Actions · <code>events.json</code></div>
 </footer>
 
+<div class="modal-veil" id="modal-veil" role="dialog" aria-modal="true">
+  <div class="modal-box" id="modal-box">
+    <div class="modal-stripe" id="modal-stripe"></div>
+    <div class="modal-inner" id="modal-inner"></div>
+  </div>
+</div>
+
 <script>
-// ─── CONFIG — update these two lines ─────────────────────────────────────────
 const GITHUB_USER = 'samoeding';
 const GITHUB_REPO = 'resale-radar';
-// ─────────────────────────────────────────────────────────────────────────────
-
-const EVENTS_URL = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/events.json`;
+const EVENTS_URL  = `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/main/events.json`;
 
 let allEvents = [];
 let activeFilters = { type: 'all', urgency: 'all' };
 
-const heatColor = { now: '#ff4d3a', soon: '#ffaa2a', watch: '#3ab8ff' };
-const tagClass  = { now: 'tag-now', soon: 'tag-soon', watch: 'tag-watch' };
-const tagLabel  = { now: 'Act now', soon: 'Coming soon', watch: 'Watch & wait' };
-
-function urgencyClass(u) {
-  const v = (u||'').toLowerCase().trim();
-  return v==='now' ? 'now' : v==='soon' ? 'soon' : 'watch';
+function getSaved() {
+  try { return new Set(JSON.parse(localStorage.getItem('rr-saved') || '[]')); } catch { return new Set(); }
 }
-function typeClass(t) {
-  const v = (t||'').toLowerCase().trim();
-  return v==='sports' ? 'sports' : v==='festival' ? 'festival' : 'concert';
+function setSaved(set) {
+  localStorage.setItem('rr-saved', JSON.stringify([...set]));
 }
-function multipleToWidth(m) {
-  const nums = (m||'').match(/[\d.]+/g);
-  if (!nums) return 20;
-  const max = Math.max(...nums.map(Number));
-  return Math.min(100, Math.max(10, ((max-1)/9)*90+10));
+function toggleSaved(id) {
+  const s = getSaved();
+  if (s.has(id)) s.delete(id); else s.add(id);
+  setSaved(s);
+  return s.has(id);
 }
 
-function buildCard(ev) {
-  const urg = urgencyClass(ev.urgency);
-  const typ = typeClass(ev.type);
+let activeSort = 'urgency';
+
+const urgRank  = { now:0, soon:1, watch:2 };
+const urgLabel = { now:'Act now', soon:'Coming soon', watch:'Watch & wait' };
+const heatCol  = { now:'var(--now)', soon:'var(--soon)', watch:'var(--watch)' };
+const stripeGrad = {
+  now:  'linear-gradient(90deg,var(--now) 0%,transparent 100%)',
+  soon: 'linear-gradient(90deg,var(--soon) 0%,transparent 100%)',
+  watch:'linear-gradient(90deg,var(--watch) 0%,transparent 100%)'
+};
+
+function normUrg(u)  { const v=(u||'').toLowerCase().trim(); return v==='now'?'now':v==='soon'?'soon':'watch'; }
+function normType(t) { const v=(t||'').toLowerCase().trim(); return v==='sports'?'sports':v==='festival'?'festival':'concert'; }
+function maxMult(m)  { const n=(m||'').match(/[\d.]+/g); return n?Math.max(...n.map(Number)):0; }
+function heatW(m)    { const mx=maxMult(m); return Math.min(100,Math.max(6,((mx-1)/9)*90+10)); }
+
+function countUp(el, target, suffix='', dur=900) {
+  if (typeof target!=='number'||isNaN(target)){el.textContent=target+suffix;return}
+  const t0=performance.now();
+  (function tick(now){
+    const p=Math.min(1,(now-t0)/dur);
+    const e=1-Math.pow(1-p,4);
+    el.textContent=Math.round(e*target)+suffix;
+    if(p<1)requestAnimationFrame(tick);
+  })(t0);
+}
+
+document.addEventListener('mousemove', e => {
+  document.querySelectorAll('.card').forEach(card => {
+    const r=card.getBoundingClientRect();
+    const px=((e.clientX-r.left)/r.width*100).toFixed(1);
+    const py=((e.clientY-r.top)/r.height*100).toFixed(1);
+    const sh=card.querySelector('.card-shimmer');
+    if(sh) sh.style.background=`radial-gradient(circle at ${px}% ${py}%,rgba(255,255,255,0.04) 0%,transparent 60%)`;
+  });
+});
+
+function buildCard(ev, idx) {
+  const urg=normUrg(ev.urgency), typ=normType(ev.type);
+  const w=heatW(ev.multiple), delay=(idx%9)*55;
+  const tCls={sports:'tag-sports',concert:'tag-concert',festival:'tag-festival'}[typ];
+  const evId=String(ev.id||idx);
+  const isSaved=getSaved().has(evId);
   return `
-  <div class="card urgency-${urg}">
-    <div class="card-top">
+<div class="card urgency-${urg}" data-idx="${idx}" data-id="${evId}" style="transition-delay:${delay}ms" role="button" tabindex="0">
+  <div class="card-stripe"></div>
+  <div class="card-shimmer"></div>
+  <div class="card-body">
+    <div class="card-header">
       <div class="event-name">${ev.name}</div>
-      <div class="type-badge type-${typ}">${ev.type||'Event'}</div>
+      <button class="save-btn${isSaved?' saved':''}" data-id="${evId}" aria-label="${isSaved?'Unsave':'Save'} event" title="${isSaved?'Unsave':'Save'}">${isSaved?'★':'☆'}</button>
+      <div class="type-tag ${tCls}">${ev.type||'Event'}</div>
     </div>
-    <div class="card-divider"></div>
-    <div class="multiple-block">
-      <div class="multiple-row">
-        <span class="multiple-value">${ev.multiple}</span>
-        <span class="multiple-label">resale multiple</span>
-      </div>
-      <div class="heat-track"><div class="heat-fill" style="width:${multipleToWidth(ev.multiple)}%;background:${heatColor[urg]};"></div></div>
+    <div class="card-rule"></div>
+    <div class="multiple-row">
+      <div class="multiple-val">${ev.multiple}</div>
+      <div class="multiple-lbl">Resale multiple</div>
     </div>
-    <div class="info-block">
+    <div class="heat-wrap">
+      <div class="heat-track"><div class="heat-fill" style="width:${w}%;background:${heatCol[urg]};"></div></div>
+    </div>
+    <div class="info-rows">
       <div class="info-row"><span class="info-key">On sale</span><span class="info-val">${ev.on_sale}</span></div>
       <div class="info-row"><span class="info-key">Best bets</span><span class="info-val">${ev.best_bets}</span></div>
       ${ev.city?`<div class="info-row"><span class="info-key">City</span><span class="info-val">${ev.city}</span></div>`:''}
-      <div class="info-row"><span class="info-key">Urgency</span><span class="info-val"><span class="urgency-tag ${tagClass[urg]}">${tagLabel[urg]}</span></span></div>
+      <div class="info-row"><span class="info-key">Urgency</span><span class="info-val"><span class="urg-badge urg-${urg}"><span class="urg-pip"></span>${urgLabel[urg]}</span></span></div>
     </div>
-  </div>`;
+  </div>
+</div>`;
 }
 
-function renderCards() {
-  const grid = document.getElementById('cards-grid');
-  const filtered = allEvents.filter(ev => {
-    const typeOk    = activeFilters.type==='all' || (ev.type||'').toLowerCase()===activeFilters.type.toLowerCase();
-    const urgencyOk = activeFilters.urgency==='all' || urgencyClass(ev.urgency)===activeFilters.urgency;
-    return typeOk && urgencyOk;
+function render() {
+  const grid=document.getElementById('cards-grid');
+  const rcEl=document.getElementById('result-count');
+  const saved=getSaved();
+  const visible=allEvents.filter(ev=>{
+    const tOk=activeFilters.type==='all'||(ev.type||'').toLowerCase()===activeFilters.type.toLowerCase();
+    const uOk=activeFilters.urgency==='all'
+      ? true
+      : activeFilters.urgency==='saved'
+        ? saved.has(String(ev.id||allEvents.indexOf(ev)))
+        : normUrg(ev.urgency)===activeFilters.urgency;
+    return tOk&&uOk;
   });
-  grid.innerHTML = filtered.length ? filtered.map(buildCard).join('') : `<div class="empty-state">No events match your filters.</div>`;
-}
-
-function updateStats() {
-  document.getElementById('stat-total').textContent = allEvents.length;
-  document.getElementById('stat-now').textContent   = allEvents.filter(e=>urgencyClass(e.urgency)==='now').length;
-  let maxVal = 0;
-  allEvents.forEach(ev => {
-    const nums = (ev.multiple||'').match(/[\d.]+/g);
-    if (nums) maxVal = Math.max(maxVal,...nums.map(Number));
+  const sorted=[...visible].sort((a,b)=>{
+    if(activeSort==='multiple')return maxMult(b.multiple)-maxMult(a.multiple);
+    if(activeSort==='name')return a.name.localeCompare(b.name);
+    return(urgRank[normUrg(a.urgency)]??3)-(urgRank[normUrg(b.urgency)]??3);
   });
-  document.getElementById('stat-max').textContent = maxVal ? `${maxVal}×` : '—';
+  if(!sorted.length){
+    grid.innerHTML=`<div class="state-empty"><p>No events match your filters.<br>Try adjusting type or urgency.</p></div>`;
+    rcEl.textContent='0 results'; return;
+  }
+  rcEl.textContent=`${sorted.length} result${sorted.length!==1?'s':''}`;
+  grid.innerHTML=sorted.map((ev,i)=>buildCard(ev,i)).join('');
+  const io=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){requestAnimationFrame(()=>e.target.classList.add('in'));io.unobserve(e.target)}
+    });
+  },{threshold:0.08});
+  grid.querySelectorAll('.card').forEach(card=>{
+    io.observe(card);
+    card.addEventListener('click',e=>{if(e.target.closest('.save-btn'))return;openModal(card.dataset.id,card.dataset.idx)});
+    card.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openModal(card.dataset.id,card.dataset.idx)}});
+    const btn=card.querySelector('.save-btn');
+    if(btn) btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const id=btn.dataset.id;
+      const nowSaved=toggleSaved(id);
+      btn.textContent=nowSaved?'★':'☆';
+      btn.classList.toggle('saved',nowSaved);
+      btn.setAttribute('aria-label',(nowSaved?'Unsave':'Save')+' event');
+      btn.classList.add('pop');
+      btn.addEventListener('transitionend',()=>btn.classList.remove('pop'),{once:true});
+      if(activeFilters.urgency==='saved')fadeRender();
+    });
+  });
 }
 
-async function loadData() {
-  try {
-    const res  = await fetch(EVENTS_URL+'?t='+Date.now());
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    allEvents  = data.events || [];
-    document.getElementById('last-updated').textContent = 'updated '+( data.last_updated||'recently');
-    updateStats();
-    renderCards();
-  } catch(err) {
-    const b = document.getElementById('error-banner');
-    b.textContent = `Could not load events. Make sure GITHUB_USER is set in index.html and the repo is public. (${err.message})`;
-    b.style.display = 'block';
-    document.getElementById('cards-grid').innerHTML = '';
+function updateStats(lu) {
+  const total=allEvents.length, nowCt=allEvents.filter(e=>normUrg(e.urgency)==='now').length;
+  let mx=0; allEvents.forEach(ev=>{mx=Math.max(mx,maxMult(ev.multiple))});
+  countUp(document.getElementById('stat-total'),total);
+  countUp(document.getElementById('stat-now'),nowCt);
+  setTimeout(()=>countUp(document.getElementById('stat-max'),mx,'×',700),150);
+  document.getElementById('stat-updated').textContent=lu||'—';
+  document.getElementById('header-count').textContent=total;
+  document.getElementById('header-date').textContent=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+}
+
+function openModal(id, fi) {
+  const ev=allEvents.find(e=>String(e.id)===String(id))||allEvents[fi];
+  if(!ev)return;
+  const urg=normUrg(ev.urgency),typ=normType(ev.type),w=heatW(ev.multiple);
+  const tCls={sports:'tag-sports',concert:'tag-concert',festival:'tag-festival'}[typ];
+  document.getElementById('modal-stripe').style.background=stripeGrad[urg];
+  document.getElementById('modal-inner').innerHTML=`
+    <div class="modal-top-row">
+      <div class="type-tag ${tCls}" style="font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;padding:2px 7px;border-radius:4px;border:1px solid;white-space:nowrap">${ev.type||'Event'}</div>
+      <button class="modal-close-btn" id="modal-close">✕</button>
+    </div>
+    <h2 class="modal-name">${ev.name}</h2>
+    <div class="modal-multiple-val">${ev.multiple}</div>
+    <div class="modal-multiple-sub">Estimated resale multiple</div>
+    <div class="modal-heat-track"><div class="modal-heat-fill" style="width:${w}%;background:${heatCol[urg]};"></div></div>
+    <div class="modal-rule"></div>
+    <div class="modal-details">
+      <div class="modal-detail"><div class="modal-detail-key">On sale</div><div class="modal-detail-val">${ev.on_sale}</div></div>
+      <div class="modal-detail"><div class="modal-detail-key">Best bets</div><div class="modal-detail-val">${ev.best_bets}</div></div>
+      ${ev.city?`<div class="modal-detail"><div class="modal-detail-key">City / Cities</div><div class="modal-detail-val">${ev.city}</div></div>`:''}
+      <div class="modal-detail"><div class="modal-detail-key">Urgency</div><div class="modal-detail-val"><span class="urg-badge urg-${urg}"><span class="urg-pip"></span>${urgLabel[urg]}</span></div></div>
+    </div>
+    <div class="modal-actions">
+      <a href="https://www.ticketmaster.com/search?q=${encodeURIComponent(ev.name)}" target="_blank" rel="noopener" class="modal-action-btn primary">Ticketmaster ↗</a>
+      <a href="https://seatgeek.com/search?q=${encodeURIComponent(ev.name)}" target="_blank" rel="noopener" class="modal-action-btn">SeatGeek ↗</a>
+      <a href="https://www.stubhub.com/find/s/?q=${encodeURIComponent(ev.name)}" target="_blank" rel="noopener" class="modal-action-btn">StubHub ↗</a>
+    </div>`;
+  document.getElementById('modal-veil').classList.add('open');
+  document.getElementById('modal-close').addEventListener('click',closeModal);
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(){document.getElementById('modal-veil').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('modal-veil').addEventListener('click',e=>{if(e.target===document.getElementById('modal-veil'))closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+document.querySelectorAll('.filter-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const f=btn.dataset.filter;
+    activeFilters[f]=btn.dataset.value;
+    document.querySelectorAll(`.filter-btn[data-filter="${f}"]`).forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    if(f==='urgency'){
+      document.getElementById('stat-cell-now').classList.remove('stat-active');
+      document.getElementById('stat-cell-max').classList.remove('stat-active');
+      activeStatFilter=null;
+    }
+    fadeRender();
+  });
+});
+
+let activeStatFilter = null;
+
+document.getElementById('stat-cell-now').addEventListener('click', () => {
+  const cell = document.getElementById('stat-cell-now');
+  const maxCell = document.getElementById('stat-cell-max');
+  if (activeStatFilter === 'now') {
+    activeStatFilter = null;
+    activeFilters.urgency = 'all';
+    cell.classList.remove('stat-active');
+    document.querySelectorAll('.filter-btn[data-filter="urgency"]').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="urgency"][data-value="all"]').classList.add('active');
+  } else {
+    activeStatFilter = 'now';
+    activeFilters.urgency = 'now';
+    cell.classList.add('stat-active');
+    maxCell.classList.remove('stat-active');
+    document.querySelectorAll('.filter-btn[data-filter="urgency"]').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="urgency"][data-value="now"]').classList.add('active');
+  }
+  fadeRender();
+});
+
+document.getElementById('stat-cell-max').addEventListener('click', () => {
+  const cell = document.getElementById('stat-cell-max');
+  const nowCell = document.getElementById('stat-cell-now');
+  if (activeStatFilter === 'max') {
+    activeStatFilter = null;
+    activeSort = 'urgency';
+    document.getElementById('sort-select').value = 'urgency';
+    cell.classList.remove('stat-active');
+  } else {
+    activeStatFilter = 'max';
+    activeSort = 'multiple';
+    document.getElementById('sort-select').value = 'multiple';
+    cell.classList.add('stat-active');
+    nowCell.classList.remove('stat-active');
+    activeFilters.urgency = 'all';
+    document.querySelectorAll('.filter-btn[data-filter="urgency"]').forEach(b=>b.classList.remove('active'));
+    document.querySelector('.filter-btn[data-filter="urgency"][data-value="all"]').classList.add('active');
+    if(activeStatFilter==='now') activeStatFilter=null;
+  }
+  fadeRender();
+});
+
+function fadeRender() {
+  const g=document.getElementById('cards-grid');
+  g.style.opacity='0';g.style.transform='translateY(6px)';g.style.transition='opacity 0.15s,transform 0.15s';
+  setTimeout(()=>{render();g.style.opacity='1';g.style.transform='translateY(0)'},150);
+}
+
+document.getElementById('sort-select').addEventListener('change',e=>{activeSort=e.target.value;render()});
+
+async function loadData(){
+  try{
+    const res=await fetch(EVENTS_URL+'?t='+Date.now());
+    if(!res.ok)throw new Error(`HTTP ${res.status}`);
+    const data=await res.json();
+    allEvents=data.events||[];
+    updateStats(data.last_updated);
+    render();
+  }catch(err){
+    document.getElementById('cards-grid').innerHTML=`<div class="state-empty"><p>Could not load events.<br>Check GITHUB_USER in index.html and ensure the repo is public.<br><br>${err.message}</p></div>`;
   }
 }
 
-document.querySelectorAll('.filter-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const f = btn.dataset.filter;
-    activeFilters[f] = btn.dataset.value;
-    document.querySelectorAll(`.filter-btn[data-filter="${f}"]`).forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    renderCards();
-  });
-});
+function getDemoData(){return[
+  {id:'nba-playoffs-2026',name:'NBA Playoffs 2026',type:'Sports',multiple:'1.5–4×',on_sale:'Now — team sites + Ticketmaster as matchups confirmed (Play-In: Apr 14–17)',best_bets:'Knicks at MSG, Conference Finals and NBA Finals home games',city:'Multiple US cities',urgency:'now'},
+  {id:'world-cup-knockouts',name:'World Cup 2026 — Knockout Rounds',type:'Sports',multiple:'3–10×',on_sale:'FIFA Last-Minute Sales Phase open now at fifa.com/tickets',best_bets:'Quarterfinals, semis, and final; US / Argentina / Spain group games',city:'Multiple US cities',urgency:'now'},
+  {id:'lady-gaga-mayhem-2',name:'Lady Gaga — Mayhem Ball (2nd NA leg)',type:'Concert',multiple:'1.5–2.5×',on_sale:'Recently announced — check Ticketmaster for city-specific on-sale dates',best_bets:'MSG and Kia Forum dates; any single-night-only markets',city:'New York, Los Angeles',urgency:'now'},
+  {id:'foo-fighters-stadium',name:'Foo Fighters — Stadium Tour 2026',type:'Concert',multiple:'1.5–2×',on_sale:'Some dates on sale now; additional markets releasing on Live Nation',best_bets:'Major stadium markets (NYC, LA, Chicago) with Queens of the Stone Age opening',city:'Multiple',urgency:'soon'},
+  {id:'ed-sheeran-play-tour',name:'Ed Sheeran — Play Tour (22 US cities)',type:'Concert',multiple:'1.5–2×',on_sale:'Summer/fall 2026 — check Ticketmaster for remaining city on-sales',best_bets:'Markets where he plays only one night; floor sections',city:'22 US cities',urgency:'soon'},
+  {id:'oasis-us-2026',name:'Oasis — Possible 2026 US Tour',type:'Concert',multiple:'3–6×',on_sale:'Not yet announced — set alerts on Ticketmaster and oasisinet.com',best_bets:'Any date in any market — 2025 US run sold out in seconds',city:'TBD',urgency:'watch'},
+  {id:'justin-bieber-tour',name:'Justin Bieber — Anticipated Tour',type:'Concert',multiple:'2–4×',on_sale:'No dates yet — Coachella headliner suggests full tour likely; watch Live Nation',best_bets:'First-announced dates; smaller venue markets before prices adjust',city:'TBD',urgency:'watch'},
+  {id:'olivia-rodrigo-tour',name:'Olivia Rodrigo — Anticipated Tour',type:'Concert',multiple:'2–5×',on_sale:'No dates confirmed — new music activity; set Ticketmaster alerts',best_bets:'Any date — GUTS Tour had huge premiums in every market',city:'TBD',urgency:'watch'},
+];}
 
 loadData();
 </script>

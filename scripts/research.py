@@ -1,7 +1,7 @@
 """
 research.py — Called by the GitHub Action.
 Uses Claude with web_search to find upcoming high-resale-potential ticket events,
-then writes a structured events_draft.json for human review.
+then writes the refreshed event list directly to events.json.
 """
 
 import anthropic
@@ -123,7 +123,7 @@ for i, ev in enumerate(data.get("events", [])):
         print(f"[research.py] WARNING: Event {i} missing fields: {missing}")
     ev.setdefault("notes", "")
 
-output_path = "events_draft.json"
+output_path = "events.json"
 with open(output_path, "w") as f:
     json.dump(data, f, indent=2)
 

@@ -32,10 +32,10 @@ jobs:
           FOCUS_AREA: ${{ github.event.inputs.focus }}
         run: python scripts/research.py
 
-      - name: Commit draft for review
+      - name: Commit refreshed events
         run: |
           git config user.name "Resale Radar Bot"
           git config user.email "bot@resale-radar"
-          git add events_draft.json
-          git commit -m "Draft refresh: $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "No changes to commit"
+          git add events.json
+          git commit -m "Refresh events: $(date -u '+%Y-%m-%d %H:%M') UTC" || echo "No changes to commit"
           git push
